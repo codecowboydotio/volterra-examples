@@ -278,7 +278,7 @@ The following variables are used in the terraform.
 | `ns` | This is the namespace that will be created and your objects will be deployed in |
 | `domain` | This is the domain that has been delegated to volterra. Ex: my.domain.com |
 | `servicename` | This is the svc name that will be created as part of your deployment. This will be reflected in the manifest within the mainfests directory |
-| `manifest_app_name` | gg |
-| `loadgen_manifest_app_name` | gg |
-| `site_selector` | gg |
+| `manifest_app_name` | This is the name of the application in the deployment. It will be used to name all associated object in volterra and kubernetes. It is also used in the kubernetes manifest as a label and selector. |
+| `loadgen_manifest_app_name` | This is the name of the load generator application in the deployment. It will be used to name all associated objects in volterra and kubernetes as they relate to the load generator app. |
+| `site_selector` | This is the selector used as part of the virtual site to select the "real" sites. |
 
