@@ -282,3 +282,146 @@ The following variables are used in the terraform.
 | `loadgen_manifest_app_name` | This is the name of the load generator application in the deployment. It will be used to name all associated objects in volterra and kubernetes as they relate to the load generator app. |
 | `site_selector` | This is the selector used as part of the virtual site to select the "real" sites. |
 
+
+## Kubernetes credentials
+
+As part of creating a virtual kubernetes cluster, we also create some kubernetes credentials objects. This is essentially a kubeconfig file that we will download and then use that created credential to create a kubeconfig file.
+
+The kubeconfig file is used to interact with our cluster.
+
+```
+resource "volterra_api_credential" "cred" {
+  name      = format("%s-api-cred", var.manifest_app_name)
+  api_credential_type = "KUBE_CONFIG"
+  virtual_k8s_namespace = volterra_namespace.ns.name
+  virtual_k8s_name = volterra_virtual_k8s.vk8s.name
+}
+
+
+resource "local_file" "kubeconfig" {
+    content = base64decode(volterra_api_credential.cred.data)
+    filename = format("%s/%s", path.module, format("%s-vk8s.yaml", terraform.workspace))
+
+    depends_on = [time_sleep.vk8s_cred_wait]
+}
+```
+## Kubernetes deployment
+
+The kubernetes deployment is relatively simple. It uses the kubeconfig file that we generated above to deploy applications from the **manifests** directory. As part of creating the manifests, we pass variables into the manifest files - the mainfest files are really just terraform templates where we can fill out the manifest at runtime using variables from our vars file (see below).
+
+```
+provider "kubectl" {
+  config_path = "./default-vk8s.yaml"
+}
+
+data "kubectl_path_documents" "manifests" {
+  pattern = "./manifests/*.yml"
+  vars = {
+      namespace  = var.ns
+      manifest_app_name = var.manifest_app_name
+      loadgen_manifest_app_name = var.loadgen_manifest_app_name
+      servicename = var.servicename
+      domain = var.domain
+  }
+}
+
+resource "kubectl_manifest" "documents" {
+    count     = length(data.kubectl_path_documents.manifests.documents)
+    yaml_body = element(data.kubectl_path_documents.manifests.documents, count.index)
+#    //This provider doesn't enforce NS from kubeconfig context
+    override_namespace = var.ns
+    depends_on = [local_file.kubeconfig, data.kubectl_path_documents.manifests]
+}
+```
+
+## Kubernetes manifests
+
+The directory "manifests" contains two mainfests. 
+
+- swapi-backend.yml: This is the backend application that is an API.
+- swapi-loadgen.yml: This is a load generator that I run to generate "fake" traffic to my API.
+
+Each manifest is a terraform template.
+
+One is a deployment and an associated service bundled together. 
+The template accepts the variables passed in from the resource. 
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: svk-swapi-api
+  namespace: ${namespace}
+  labels:
+    app: ${manifest_app_name}
+  annotations:
+    ves.io/workload-flavor: tiny
+    ves.io/virtual-sites: ${namespace}/${namespace}-vs
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ${manifest_app_name}
+  template:
+    metadata:
+      labels:
+        app: ${manifest_app_name}
+    spec:
+      containers:
+      - image: public.ecr.aws/y6q2t0j9/demos:swapi-api
+        imagePullPolicy: IfNotPresent
+        name: ${manifest_app_name}
+        ports:
+          - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${servicename}
+  labels:
+    app: ${manifest_app_name}
+spec:
+  type: ClusterIP
+  selector:
+    app: ${manifest_app_name}
+  ports:
+  - name: grpc
+    port: 3000
+    targetPort: 3000
+```
+
+The second template is deployment for the loadgen container.
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${loadgen_manifest_app_name}
+  namespace: ${namespace}
+  labels:
+    app: ${loadgen_manifest_app_name}
+  annotations:
+    ves.io/workload-flavor: tiny
+    ves.io/virtual-sites: ${namespace}/${namespace}-vs
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ${loadgen_manifest_app_name}
+  template:
+    metadata:
+      labels:
+        app: ${loadgen_manifest_app_name}
+    spec:
+      containers:
+      - image: public.ecr.aws/y6q2t0j9/demos:swapi-loadgen
+        imagePullPolicy: IfNotPresent
+        name: ${loadgen_manifest_app_name}
+        ports:
+          - containerPort: 8080
+        env:
+          - name: TARGET_URL
+            value: "https://${manifest_app_name}.${domain}"
+```
+
+The main difference is that this container takes an environment variable that is the URL of the endpoint that you want to test. The container is built to use the tor network to generate a more random source address.
