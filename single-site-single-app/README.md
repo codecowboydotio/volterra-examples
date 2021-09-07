@@ -275,9 +275,9 @@ The following variables are used in the terraform.
 
 | Variable | Description |
 |------|------|
-| `ns` | gg |
-| `domain` | gg |
-| `servicename` | gg |
+| `ns` | This is the namespace that will be created and your objects will be deployed in |
+| `domain` | This is the domain that has been delegated to volterra. Ex: my.domain.com |
+| `servicename` | This is the svc name that will be created as part of your deployment. This will be reflected in the manifest within the mainfests directory |
 | `manifest_app_name` | gg |
 | `loadgen_manifest_app_name` | gg |
 | `site_selector` | gg |
