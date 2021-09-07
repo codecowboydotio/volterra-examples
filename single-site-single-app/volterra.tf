@@ -94,7 +94,6 @@ resource "volterra_http_loadbalancer" "backend" {
   namespace                       = volterra_namespace.ns.name
   depends_on                      = [time_sleep.ns_wait]
   description                     = format("HTTP loadbalancer object for %s origin server", var.manifest_app_name)
-  #domains                         = ["svk-demo-app.sa.f5demos.com"]
   domains                         = ["${var.manifest_app_name}.${var.domain}"]
   advertise_on_public_default_vip = true
   labels                          = { "ves.io/app_type" = volterra_app_type.at.name }

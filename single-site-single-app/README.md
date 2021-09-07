@@ -274,6 +274,7 @@ In addition to this, we have added some "more options". This allows us to add a 
 The following variables are used in the terraform.
 
 | Variable | Description |
+|------|------|
 | `ns` | gg |
 | `domain` | gg |
 | `servicename` | gg |
