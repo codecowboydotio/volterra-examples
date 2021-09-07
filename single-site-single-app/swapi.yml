@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    ves.io/virtual-sites: s-vankalken/s-vankalken-vs
+    ves.io/workload-flavor: tiny
+  labels:
+    app: svk-swapi-api
+  name: svk-swapi-api
+  namespace: s-vankalken
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: svk-swapi-api
+  template:
+    metadata:
+      labels:
+        app: svk-swapi-api
+    spec:
+      containers:
+      - image: public.ecr.aws/y6q2t0j9/demos:swapi-api
+        imagePullPolicy: IfNotPresent
+        name: svk-swapi-api
+        ports:
+        - containerPort: 3000
+
