@@ -174,9 +174,110 @@ resource "volterra_app_type" "at" {
 This essentially sets up a custom application type with all of the features enabled. 
 This will automatically create a card named after your app type when you deploy your application.
 
-### Load Balancer
 
 ### Origin Pool
 
+The origin pool represents the kubernetes service that you created earlier. 
+Rather than performing a "normal" ingress, you create an origin pool, which can represent a normal origin pool like a network IP address, or a domain name. An origin pool can also represent or point to a volterra voltstack service within a namespace.
+
+In our case this will point to a volterra service running in our site. 
+The format for this is to use the servicename and namespace in the form of "servicename.namespace"
+
+```
+resource "volterra_origin_pool" "backend" {
+  name                   = format("%s-be", var.manifest_app_name)
+  namespace              = volterra_namespace.ns.name
+  depends_on             = [time_sleep.ns_wait]
+  description            = format("Origin pool pointing to backend k8s service running in main-vsite")
+  loadbalancer_algorithm = "ROUND ROBIN"
+  origin_servers {
+    k8s_service {
+      inside_network  = false
+      outside_network = false
+      vk8s_networks   = true
+      service_name    = format("${var.servicename}.%s", volterra_namespace.ns.name)
+      site_locator {
+        virtual_site {
+          name      = volterra_virtual_site.main.name
+          namespace = volterra_namespace.ns.name
+        }
+      }
+    }
+  }
+  port               = 3000
+  no_tls             = true
+  endpoint_selection = "LOCAL_PREFERRED"
+}
+```
+
+This effectively exposes the kubernetes service onto the wider volterra network.
+
+The reason that it's done this way is that using an origin pool, we can expose other types of services onto the volterra network, a kubernetes service within a namespace is simply one type. This represents a more generic way of exposing objects.
+
+### Load Balancer
+
+The last piece of the puzzle is to expose a service externally to the world
+Again, this is via a load balancer rather than any specific ingress annotation.
+
+The reason for this is that a kubernetes service is just one type of object that can be exposed. 
+In terms of exposing our web app to the outside world, we do it via the origin pool.
+
+In many ways, the load balancer object has many of the characteristics of a "normal" load balancer object.
+It has layer 7 rewrite and routing functionality, as well as the ability to select an origin pool.
+
+The origin pool being selected can be any type that has been created. 
+
+In our case, we select the origin pool we created above.
+
+```
+resource "volterra_http_loadbalancer" "backend" {
+  name                            = format("%s-be", var.manifest_app_name)
+  namespace                       = volterra_namespace.ns.name
+  depends_on                      = [time_sleep.ns_wait]
+  description                     = format("HTTP loadbalancer object for %s origin server", var.manifest_app_name)
+  domains                         = ["${var.manifest_app_name}.${var.domain}"]
+  advertise_on_public_default_vip = true
+  labels                          = { "ves.io/app_type" = volterra_app_type.at.name }
+  default_route_pools {
+    pool {
+      name      = volterra_origin_pool.backend.name
+      namespace = volterra_namespace.ns.name
+    }
+  }
+  https_auto_cert {
+    add_hsts      = false
+    http_redirect = true
+    no_mtls       = true
+  }
+  more_option {
+    response_headers_to_add {
+        name   = "Access-Control-Allow-Origin"
+        value  = "*"
+        append = false
+    }
+  }
+  disable_waf                     = true
+  disable_rate_limit              = true
+  round_robin                     = true
+  service_policies_from_namespace = true
+  no_challenge                    = true
+}
+```
+
+The important things in this resource are that we have used our app type that we created earlier as a label on the load balancer.
+
+We have also pointed this loa balancer to our origin pool that we created earlier.
+
+In addition to this, we have added some "more options". This allows us to add a response header of **Access-Control-Allow_Origin** with a wildcard. This essentially allows anywhere as an origin should we want to use a certificate that is out of date. It's a way of working around some CORS problems. Not elegant.... but this is a demonstration after all. :)
+
 ## Variables
+The following variables are used in the terraform.
+
+| Variable | Description |
+| `ns` | gg |
+| `domain` | gg |
+| `servicename` | gg |
+| `manifest_app_name` | gg |
+| `loadgen_manifest_app_name` | gg |
+| `site_selector` | gg |
 

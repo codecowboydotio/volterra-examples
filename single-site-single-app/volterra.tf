@@ -1,6 +1,4 @@
 provider "volterra" {
-  #api_p12_file     = "/root/volterra.ves.volterra.io.api-creds.p12"
-  #url              = "https://console.ves.volterra.io/api"
   api_p12_file     = "/root/f5-sa.console.ves.volterra.io.api-creds.p12"
   url              = "https://f5-sa.console.ves.volterra.io/api"
 }
@@ -52,7 +50,6 @@ resource "volterra_api_credential" "cred" {
   api_credential_type = "KUBE_CONFIG"
   virtual_k8s_namespace = volterra_namespace.ns.name
   virtual_k8s_name = volterra_virtual_k8s.vk8s.name
-####  depends_on = [time_sleep.vk8s_wait]
 }
 
 resource "time_sleep" "vk8s_cred_wait" {
