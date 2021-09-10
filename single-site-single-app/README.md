@@ -89,6 +89,11 @@ The three important pieces here are:
 - site selector
 - site type
 
+Much like Kubernetes Volterra uses labels and selectors to identify objects. 
+Some of the terminology overlaps with Kubernetes terminology, but don't be worried, I've tried to show which pieces are specific to the volterra control plane, and which are not.
+
+![Volterra Site Concepts](volterra-namespace-site.JPG)
+
 **Labels**
 
 This is a label that I can use to identify this particular object. This object is identified using the site name.
