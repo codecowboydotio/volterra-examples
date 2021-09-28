@@ -1,13 +1,13 @@
-# Volterra Example - Single App, Single Site
+# Volterra Example - voltstack Customer Edge Site
 
-This is a teraform example of a single application and a single site.
+This is a teraform example of customer edge site on Volterra. This specific example builds a customer edge site in AWS.
 
 This is based on the documentation available at [Volterra.io](http://volterra.io)
 
 ## Explanation
 
 As part of learning the Volterra platform, I have created a few scenario's that shows different functionality. 
-This scenario is the single application, within a single namesapce and single site.
+This scenario is a customer edge site and a single application. The customer edge site runs in AWS.
 
 This will become clearer over the course of the README.
 

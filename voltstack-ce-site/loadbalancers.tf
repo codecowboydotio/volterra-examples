@@ -18,6 +18,8 @@ resource "volterra_tcp_loadbalancer" "unit-config" {
   }
 
   hash_policy_choice_round_robin = true
+
+  depends_on = [ local_file.kubeconfig ]
 }
 
 

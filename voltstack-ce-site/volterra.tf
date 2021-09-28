@@ -52,6 +52,11 @@ resource "volterra_aws_vpc_site" "ce" {
     forward_proxy_allow_all = true
     no_global_network = true
     no_k8s_cluster = true
+//    k8s_cluster {
+      //tenant = "f5-apac-sp-yhsgmcye"
+      //namespace = "system"
+      //name = var.site_name
+//    }
     no_network_policy = true
     no_outside_static_routes = true
     default_storage = true
@@ -86,7 +91,7 @@ resource "volterra_virtual_site" "main" {
   depends_on = [volterra_tf_params_action.ce]
 
   site_selector {
-    expressions = [ "svksite in (aws)" ]
+    expressions = [ "ce-site-type in (aws)" ]
   }
   site_type = "CUSTOMER_EDGE"
 }
