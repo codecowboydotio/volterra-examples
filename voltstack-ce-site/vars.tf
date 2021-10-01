@@ -9,7 +9,8 @@ variable "site_name" { default = "svk-tf" }
 
 variable "ns" { default = "s-vankalken" }
 variable "domain_host" { default = "svk-unit-demo" }
-variable "domain" { default = "sa.f5demos.com" }
+#variable "domain" { default = "sa.f5demos.com" }
+variable "domain" { default = "sales-public.f5demos.com" }
 variable "servicename" { default = "svk-unit" }
 variable "unit_config_port" { default = "8888" }
 

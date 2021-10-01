@@ -1,6 +1,8 @@
 provider "volterra" {
-  api_p12_file     = "/root/f5-sa.console.ves.volterra.io.api-creds.p12"
-  url              = "https://f5-sa.console.ves.volterra.io/api"
+#  api_p12_file     = "/root/f5-sa.console.ves.volterra.io.api-creds.p12"
+#  url              = "https://f5-sa.console.ves.volterra.io/api"
+  api_p12_file     = "/root/f5-sales-public.console.ves.volterra.io.api-creds.p12"
+  url              = "https://f5-sales-public.console.ves.volterra.io/api"
 }
 
 resource "volterra_namespace" "ns" {
@@ -51,12 +53,12 @@ resource "volterra_aws_vpc_site" "ce" {
     aws_certified_hw = "aws-byol-voltstack-combo"
     forward_proxy_allow_all = true
     no_global_network = true
-    no_k8s_cluster = true
-//    k8s_cluster {
-      //tenant = "f5-apac-sp-yhsgmcye"
-      //namespace = "system"
-      //name = var.site_name
-//    }
+//    no_k8s_cluster = true
+    k8s_cluster {
+//      tenant = "f5-apac-sp-yhsgmcye"
+      namespace = "system"
+      name = volterra_k8s_cluster.example.name
+    }
     no_network_policy = true
     no_outside_static_routes = true
     default_storage = true
@@ -74,6 +76,39 @@ resource "volterra_aws_vpc_site" "ce" {
   // One of the arguments from this list "nodes_per_az total_nodes no_worker_nodes" must be set
   #nodes_per_az = "1"
   no_worker_nodes = true
+
+  depends_on = [ volterra_k8s_cluster.example ]
+}
+
+resource "volterra_k8s_cluster" "example" {
+  name      = "svk-k8s"
+  namespace = "system"
+
+  // One of the arguments from this list "cluster_wide_app_list no_cluster_wide_apps" must be set
+  no_cluster_wide_apps = true
+
+  // One of the arguments from this list "use_custom_cluster_role_bindings use_default_cluster_role_bindings" must be set
+  use_default_cluster_role_bindings = true
+
+  // One of the arguments from this list "use_default_cluster_roles use_custom_cluster_role_list" must be set
+  use_default_cluster_roles = true
+
+  // One of the arguments from this list "no_global_access global_access_enable" must be set
+  no_global_access = true
+
+  // One of the arguments from this list "no_insecure_registries insecure_registry_list" must be set
+  no_insecure_registries = true
+
+  // One of the arguments from this list "no_local_access local_access_config" must be set
+
+  local_access_config {
+    local_domain = "example.com"
+
+    // One of the arguments from this list "default_port port" must be set
+    default_port = true
+  }
+  // One of the arguments from this list "use_default_psp use_custom_psp_list" must be set
+  use_default_psp = true
 }
 
 resource "volterra_tf_params_action" "ce" {

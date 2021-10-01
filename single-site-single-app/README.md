@@ -351,6 +351,18 @@ Each manifest is a terraform template.
 One is a deployment and an associated service bundled together. 
 The template accepts the variables passed in from the resource. 
 
+### Annotations
+
+You will note that the manifests have annotations that are volterra specific. 
+These are documented [here](https://www.volterra.io/docs/reference/vks-api-comp#resource-management-for-volterra-vk8s)
+
+The annotations I am using, define a pod size, but also (and more importantly) a site to deploy to.
+Think of a site as "where". 
+In my case I am using a virtual site. As per the resources above, my virtual site uses a selector of **real** site names to aggregate all of my sites together. 
+
+This allows me to have a deployment that is conducted / deployed at all sites at the same time.
+
+
 ```
 apiVersion: apps/v1
 kind: Deployment
