@@ -55,7 +55,6 @@ resource "volterra_aws_vpc_site" "ce" {
     no_global_network = true
 //    no_k8s_cluster = true
     k8s_cluster {
-//      tenant = "f5-apac-sp-yhsgmcye"
       namespace = "system"
       name = volterra_k8s_cluster.example.name
     }
@@ -71,11 +70,29 @@ resource "volterra_aws_vpc_site" "ce" {
          }
          disk_size = "80"
     } // end of az_nodes
+    az_nodes {
+         aws_az_name = format("%sb", var.aws_region)
+         local_subnet {
+           subnet_param {
+             ipv4 = var.aws_az2_subnet
+           }
+         }
+         disk_size = "80"
+    } // end of az_nodes
+    az_nodes {
+         aws_az_name = format("%sc", var.aws_region)
+         local_subnet {
+           subnet_param {
+             ipv4 = var.aws_az3_subnet
+           }
+         }
+         disk_size = "80"
+    } // end of az_nodes
   } //end of voltstack_cluster resource
 
   // One of the arguments from this list "nodes_per_az total_nodes no_worker_nodes" must be set
-  #nodes_per_az = "1"
-  no_worker_nodes = true
+  nodes_per_az = "3"
+  //no_worker_nodes = true
 
   depends_on = [ volterra_k8s_cluster.example ]
 }

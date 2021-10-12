@@ -1,5 +1,6 @@
 variable "ns" { default = "s-vankalken" }
-variable "domain" { default = "sa.f5demos.com" }
+#variable "domain" { default = "sa.f5demos.com" }
+variable "domain" { default = "sales-public.f5demos.com" }
 variable "servicename" { default = "svk-swapi-api2" }
 
 variable "manifest_app_name" { default = "svk-swapi-api2" }
