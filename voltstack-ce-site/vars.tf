@@ -19,7 +19,7 @@ variable "unit_config_port" { default = "8888" }
 #variable "manifest_app_name" { default = "svk-swapi-api" }
 #variable "loadgen_manifest_app_name" { default = "svk-swapi-loadgen" }
 
-variable "site_selector" { default = [ "ves.io/siteName in (ves-io-sg3-sin, ves-io-sy5-syd)" ] }
+variable "site_selector" { default = [ "ves.io/siteName in (ves-io-sg3-sin)" ] }
 
 variable "origins" {
   type = map
@@ -27,6 +27,7 @@ variable "origins" {
     unit-config-origin = "8888"
     unit-git-origin = "8080"
     unit-app-origin = "8181"
+    unit-app2-origin = "8182"
   }
 }
 

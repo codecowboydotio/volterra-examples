@@ -20,7 +20,7 @@ metadata:
     app: svk-unit
   annotations:
     ves.io/workload-flavor: ves-io-large
-    ves.io/virtual-sites: s-vankalken/s-vankalken-vs
+#    ves.io/virtual-sites: s-vankalken/s-vankalken-vs
 spec:
   replicas: 1
   selector:
@@ -41,6 +41,7 @@ spec:
         ports:
           - containerPort: 8080
           - containerPort: 8181
+          - containerPort: 8182
           - containerPort: 8888
         env:
           - name: PVC
@@ -66,9 +67,12 @@ spec:
   - name: control
     port: 8080
     targetPort: 8080
-  - name: app
+  - name: app1
     port: 8181
     targetPort: 8181
+  - name: app2
+    port: 8182
+    targetPort: 8182
   - name: foo
     port: 8888
     targetPort: 8888

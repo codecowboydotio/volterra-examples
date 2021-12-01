@@ -7,7 +7,6 @@ metadata:
     app: ${loadgen_manifest_app_name}
   annotations:
     ves.io/workload-flavor: tiny
-    ves.io/virtual-sites: ${namespace}/${namespace}-vs
 spec:
   replicas: 2
   selector:
@@ -26,4 +25,4 @@ spec:
           - containerPort: 8080
         env:
           - name: TARGET_URL
-            value: "https://${manifest_app_name}.${domain}"
+            value: "http://${manifest_app_name}.${domain}"
