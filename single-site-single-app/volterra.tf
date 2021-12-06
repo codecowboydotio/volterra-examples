@@ -22,10 +22,23 @@ resource "volterra_virtual_site" "main" {
   depends_on = [time_sleep.ns_wait]
 
   labels = {
-    "ves.io/siteName" = "ves-io-sg3-sin"
+    "ves.io/siteName" = "svk-1"
   }
   site_selector {
     expressions = var.site_selector
+  }
+  site_type = "REGIONAL_EDGE"
+}
+resource "volterra_virtual_site" "svk2" {
+  name      = "svk-2-vs"
+  namespace = volterra_namespace.ns.name
+  depends_on = [time_sleep.ns_wait]
+
+  labels = {
+    "ves.io/siteName" = "svk-2"
+  }
+  site_selector {
+    expressions = var.site_selector_svk2
   }
   site_type = "REGIONAL_EDGE"
 }

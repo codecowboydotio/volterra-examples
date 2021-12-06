@@ -52,6 +52,19 @@ resource "volterra_http_loadbalancer" "app" {
         append = false
     }
   }
+  routes {
+    simple_route {
+      auto_host_rewrite = true
+      path {
+        prefix = "/config" 
+      }
+      origin_pools {
+        pool {
+          name = "unit-config-origin"
+        }
+      } 
+    }
+  }
   disable_waf                     = true
   disable_rate_limit              = true
   round_robin                     = true

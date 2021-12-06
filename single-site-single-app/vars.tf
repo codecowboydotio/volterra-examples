@@ -7,4 +7,5 @@ variable "manifest_app_name" { default = "svk-swapi-api" }
 variable "loadgen_manifest_app_name" { default = "svk-swapi-loadgen" }
 
 #variable "site_selector" { default = [ "ves.io/siteName in (ves-io-sg3-sin, ves-io-ny8-nyc, ves-io-os1-osa)" ] }
-variable "site_selector" { default = [ "ves.io/siteName in (ves-io-me1-mel, ves-io-sy5-syd, ves-io-sg3-sin)" ] }
+variable "site_selector" { default = [ "ves.io/siteName in (ves-io-me1-mel, ves-io-sy5-syd)" ] }
+variable "site_selector_svk2" { default = [ "ves.io/siteName in (ves-io-sg3-sin)" ] }
