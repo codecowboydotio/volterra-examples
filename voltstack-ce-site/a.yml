@@ -73,6 +73,15 @@ spec:
   - name: app2
     port: 8182
     targetPort: 8182
-  - name: foo
+  - name: app3
+    port: 8183
+    targetPort: 8183
+  - name: app4
+    port: 8184
+    targetPort: 8184
+  - name: app5
+    port: 8185
+    targetPort: 8185
+  - name: config
     port: 8888
     targetPort: 8888

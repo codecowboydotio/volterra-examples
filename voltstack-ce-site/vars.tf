@@ -26,8 +26,11 @@ variable "origins" {
   default = {
     unit-config-origin = "8888"
     unit-git-origin = "8080"
-    unit-app-origin = "8181"
+    unit-app1-origin = "8181"
     unit-app2-origin = "8182"
+    unit-app3-origin = "8183"
+    unit-app4-origin = "8184"
+    unit-app5-origin = "8185"
   }
 }
 

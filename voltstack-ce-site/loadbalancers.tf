@@ -19,7 +19,7 @@ resource "volterra_tcp_loadbalancer" "unit-config" {
 
   hash_policy_choice_round_robin = true
 
-  depends_on = [ local_file.kubeconfig ]
+  depends_on = [ local_file.kubeconfig, volterra_origin_pool.unit_origins ]
 }
 
 
@@ -33,7 +33,7 @@ resource "volterra_http_loadbalancer" "app" {
 #  labels                          = { "ves.io/app_type" = volterra_app_type.at.name }
   default_route_pools {
     pool {
-      name      = "unit-app-origin"
+      name      = "unit-app1-origin"
       namespace = volterra_namespace.ns.name
     }
   }

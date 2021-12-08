@@ -3,6 +3,7 @@ provider "volterra" {
 #  url              = "https://f5-sa.console.ves.volterra.io/api"
   api_p12_file     = "/root/f5-sales-public.console.ves.volterra.io.api-creds.p12"
   url              = "https://f5-sales-public.console.ves.volterra.io/api"
+  timeout          = "120s"
 }
 
 resource "volterra_namespace" "ns" {
