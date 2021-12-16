@@ -119,14 +119,15 @@ resource "volterra_http_loadbalancer" "backend" {
       namespace = volterra_namespace.ns.name
     }
   }
-#  https_auto_cert {
-#    add_hsts      = false
-#    http_redirect = true
-#    no_mtls       = true
-#  }
-  http {
-    dns_volterra_managed = true
+  https_auto_cert {
+    add_hsts      = false
+    http_redirect = true
+    no_mtls       = true
+    enable_path_normalize = true
   }
+#  http {
+#    dns_volterra_managed = true
+#  }
   more_option {
     response_headers_to_add {
         name   = "Access-Control-Allow-Origin"
@@ -134,11 +135,14 @@ resource "volterra_http_loadbalancer" "backend" {
         append = false
     }
   }
+
+  multi_lb_app                    = true 
   disable_waf                     = true
   disable_rate_limit              = true
   round_robin                     = true
   service_policies_from_namespace = true
   no_challenge                    = true
+  user_id_client_ip = true
 }
 
 resource "volterra_app_type" "at" {
