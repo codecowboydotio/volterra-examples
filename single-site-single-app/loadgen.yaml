@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    ves.io/workload-flavor: tiny
+#    ves.io/virtual-sites: svk-2-vs                        # Singapore
+#    ves.io/virtual-sites: s-vankalken-vs                  # Australia
+    ves.io/virtual-sites: "s-vankalken-vs, svk-2-vs"      # All sites
+  labels:
+    app: svk-swapi-loadgen
+  name: svk-swapi-loadgen
+  namespace: s-vankalken
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: svk-swapi-loadgen
+  template:
+    metadata:
+      labels:
+        app: svk-swapi-loadgen
+    spec:
+      containers:
+      - env:
+        - name: TARGET_URL
+          value: http://svk-swapi-api.sales-public.f5demos.com
+        image: public.ecr.aws/y6q2t0j9/demos:swapi-loadgen
+        imagePullPolicy: IfNotPresent
+        name: svk-swapi-loadgen
+        ports:
+        - containerPort: 8080

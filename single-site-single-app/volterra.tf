@@ -30,7 +30,8 @@ resource "volterra_virtual_site" "main" {
   site_type = "REGIONAL_EDGE"
 }
 resource "volterra_virtual_site" "svk2" {
-  name      = "svk-2-vs"
+  #name      = "svk-2-vs"
+  name      = format("%s-2-vs", volterra_namespace.ns.name)
   namespace = volterra_namespace.ns.name
   depends_on = [time_sleep.ns_wait]
 
